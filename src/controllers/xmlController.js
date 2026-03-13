@@ -68,17 +68,19 @@ export const atualizar = async (req, res) => {
             return sendXml(res, 400, { error: 'Corpo da requisição vazio. Envie os dados!' });
         }
 
+         const dadosAtualizados = xmlToObj(req.body);
+
         const exemplo = await ExemploModel.buscarPorId(parseInt(id));
 
         if (!exemplo) {
             sendXml(res, 404, { error: 'Registro não encontrado para atualizar.' });
         }
 
-        if (req.body.nome !== undefined) exemplo.nome = req.body.nome;
-        if (req.body.estado !== undefined) exemplo.estado = req.body.estado;
-        if (req.body.preco !== undefined) exemplo.preco = parseFloat(req.body.preco);
+        if (dadosAtualizados.nome !== undefined) exemplo.nome = dadosAtualizados.nome;
+        if (dadosAtualizados.estado !== undefined) exemplo.estado = dadosAtualizados.estado;
+        if (dadosAtualizados.preco !== undefined) exemplo.preco = parseFloat(dadosAtualizados.preco);
 
-        const data = await exemplo.atualizar();
+        const data = await exemplo.atualizar(id, xmlToObj(req.body));
 
         sendXml(res, 200, {
             message: 'O registro "${data.nome}" foi atualizado com sucesso!',
